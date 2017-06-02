@@ -1,10 +1,12 @@
-import java.util.*;
+import java.util.Arrays;
+import java.util.ArrayList;
 
 public class BruteCollinearPoints {
-    private LineSegment[] lines;
+    private ArrayList<LineSegment> lines;
 
     public BruteCollinearPoints(Point[] points) {   // finds all line segments containing 4 points
         int len = points.length;
+        if (len == 0) throw new IllegalArgumentException();
         Arrays.sort(points);
         for (int i = 0; i < len - 1; i++) {
             if (points[i].compareTo(points[i + 1]) == 0) {
@@ -20,21 +22,20 @@ public class BruteCollinearPoints {
                     if (slopeIJ == points[i].slopeTo(points[k])) {
                         for (int l = k + 1; l < len; l++) {
                             if (slopeIJ == points[i].slopeTo(points[l])) {
-                                valid.add(new LineSegment(points[i], points[l]));
+                                lines.add(new LineSegment(points[i], points[l]));
                             }
                         }
                     }
                 }
             }
         }
-        lines = valid.toArray(new LineSegment[valid.size()]);
     }
 
     public           int numberOfSegments() {       // the number of line segments
-        return lines.length;
+        return lines.size();
     }
 
     public LineSegment[] segments() {               // the line segments
-        return Arrays.copyOf(lines, lines.length);
+        return lines.toArray(new LineSegment[lines.size()]);
     }
 }
