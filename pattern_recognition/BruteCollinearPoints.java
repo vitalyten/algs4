@@ -15,11 +15,13 @@ public class BruteCollinearPoints {
         ArrayList<LineSegment> valid = new ArrayList<LineSegment>();
         for (int i = 0; i < len - 3; i++) {
             for (int j = i + 1; j < len - 2; j++) {
+                double slopeIJ = points[i].slopeTo(points[j]);
                 for (int k = j + 1; k < len - 1; k++) {
-                    for (int l = k + 1; l < len; l++) {
-                        if (points[i].slopeTo(points[j]) == points[i].slopeTo(points[k]) &&
-                            points[i].slopeTo(points[j]) == points[i].slopeTo(points[l])) {
-                            valid.add(new LineSegment(points[i], points[l]));
+                    if (slopeIJ == points[i].slopeTo(points[k])) {
+                        for (int l = k + 1; l < len; l++) {
+                            if (slopeIJ == points[i].slopeTo(points[l])) {
+                                valid.add(new LineSegment(points[i], points[l]));
+                            }
                         }
                     }
                 }
