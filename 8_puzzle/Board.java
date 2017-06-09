@@ -10,8 +10,8 @@ public class Board {
     public Board(int[][] blocks) {          // construct a board from an n-by-n array of blocks (where blocks[i][j] = block in row i, column j)
         n = blocks.length;
         this.blocks = new int[n][];
-        for (int i = 0; i < n; i++) {
-            this.blocks[i] = blocks[i].clone();
+        for (int row = 0; row < n; row++) {
+            this.blocks[row] = blocks[row].clone();
         }
     }
 
@@ -21,9 +21,9 @@ public class Board {
 
     public int hamming() {                  // number of blocks out of place
         hamming = 0;
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                if (blocks[i][j] != 0 && blocks[i][j] != n * i + j + 1) hamming++;
+        for (int row = 0; row < n; row++) {
+            for (int col = 0; col < n; col++) {
+                if (blocks[row][col] != 0 && blocks[row][col] != n * row + col + 1) hamming++;
             }
         }
         return hamming;
@@ -31,10 +31,10 @@ public class Board {
 
     public int manhattan() {                // sum of Manhattan distances between blocks and goal
         manhattan = 0;
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                if (blocks[i][j] != 0 && blocks[i][j] != n * i + j + 1) {
-                    manhattan += Math.abs(((blocks[i][j] - 1) / n) - i) + Math.abs(((blocks[i][j] - 1) % n) - j);
+        for (int row = 0; row < n; row++) {
+            for (int col = 0; col < n; col++) {
+                if (blocks[row][col] != 0 && blocks[row][col] != n * row + col + 1) {
+                    manhattan += Math.abs(((blocks[row][col] - 1) / n) - row) + Math.abs(((blocks[row][col] - 1) % n) - col);
                 }
             }
         }
@@ -42,9 +42,9 @@ public class Board {
     }
 
     public boolean isGoal() {               // is this board the goal board?
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                if (blocks[i][j] != 0 && blocks[i][j] != n * i + j + 1) return false;
+        for (int row = 0; row < n; row++) {
+            for (int col = 0; col < n; col++) {
+                if (blocks[row][col] != 0 && blocks[row][col] != n * row + col + 1) return false;
             }
         }
         return true;
@@ -52,10 +52,10 @@ public class Board {
 
     public Board twin() {                   // a board that is obtained by exchanging any pair of blocks
         Board twin = new Board(blocks);
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n - 1; j++) {
-                if (blocks[i][j] != 0 && blocks[i][j + 1] != 0) {
-                    twin.exch(i, j, i, j + 1);
+        for (int row = 0; row < n; row++) {
+            for (int col = 0; col < n - 1; col++) {
+                if (blocks[row][col] != 0 && blocks[row][col + 1] != 0) {
+                    twin.exch(row, col, row, col + 1);
                     return twin;
                 }
             }
@@ -65,20 +65,63 @@ public class Board {
 
     public boolean equals(Object y) {       // does this board equal y?
         if (y == null || y.getClass() != this.getClass()) return false;
+        if ((Board) y == this) return true;
+        Board that = (Board) y;
+        if (Arrays.deepEquals(blocks, that.blocks)) return true;
+        return false;
     }
 
     public Iterable<Board> neighbors() {    // all neighboring boards
+        Queue<Board> neighbors = new Queue<Board>();
 
+        int row0 = -1, col0 = -1;
+        for (int row = 0; row < n; row++) {
+            for (int col = 0; col < n; col++) {
+                if (blocks[row][col] == 0) {
+                    row0 = row;
+                    col0 = col;
+                }
+            }
+        }
+        if (col0 > 0) {
+            Board neighbor = new Board(blocks);
+            neighbor.exch(row0, col0, row0, col0 - 1);
+            neighbors.enqueue(neighbor);
+        }
+        if (row0 > 0) {
+            Board neighbor = new Board(blocks);
+            neighbor.exch(row0, col0, row0 - 1, col0);
+            neighbors.enqueue(neighbor);
+        }
+        if (col0 < n - 1) {
+            Board neighbor = new Board(blocks);
+            neighbor.exch(row0, col0, row0, col0 + 1);
+            neighbors.enqueue(neighbor);
+        }
+        if (row0 < n - 1) {
+            Board neighbor = new Board(blocks);
+            neighbor.exch(row0, col0, row0 + 1, col0);
+            neighbors.enqueue(neighbor);
+        }
+        return neighbors;
     }
 
     public String toString() {              // string representation of this board (in the output format specified below)
-
+        StringBuilder str = new StringBuilder();
+        str.append(n + "\n");
+        for (int row = 0; row < n; row++) {
+            for (int col = 0; col < n; col++) {
+                    str.append(String.format("%2d ", blocks[row][col]));
+            }
+            str.append("\n");
+        }
+        return str.toString();
     }
 
-    public void exch(int i1, int j1, int i2, int j2) {
-        int tmp = blocks[i1][j1];
-        blocks[i1][j1] = blocks[i2][j2];
-        blocks[i2][j2] = tmp;
+    public void exch(int row1, int col1, int row2, int col2) {
+        int tmp = blocks[row1][col1];
+        blocks[row1][col1] = blocks[row2][col2];
+        blocks[row2][col2] = tmp;
     }
 
     // public static void main(String[] args) // unit tests (not graded)
