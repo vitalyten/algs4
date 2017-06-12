@@ -118,7 +118,7 @@ public class Board {
         return str.toString();
     }
 
-    public void exch(int row1, int col1, int row2, int col2) {
+    private void exch(int row1, int col1, int row2, int col2) {
         int tmp = blocks[row1][col1];
         blocks[row1][col1] = blocks[row2][col2];
         blocks[row2][col2] = tmp;
